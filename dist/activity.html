@@ -1,0 +1,270 @@
+<!DOCTYPE HTML>
+<html manifest="manifest.appcache">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="format-detection" content="telephone=no"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"/>
+    <meta name="format-detection" content="telephone=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>节目互动</title>
+    <link rel="stylesheet" type="text/css" href="main.css"/>
+    <link rel="stylesheet" type="text/css" async href="font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="swiper-3.3.1.min.css"/>
+    <link rel="stylesheet" href="http://g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">
+    <link rel="stylesheet" href="http://g.alicdn.com/msui/sm/0.6.2/css/??sm.min.css,sm-extend.min.css">
+    <link rel="stylesheet" type="text/css" href="activity.css">
+</head>
+
+<body>
+<div id="activePage" class="page">
+    <nav class="bar bar-tab">
+        <div class="bar">
+            <div class="searchbar">
+                <a class="searchbar-cancel">发送</a>
+                <div class="search-input">
+                    <input type="search" id='comment' placeholder='' v-bind:placeholder="placeholderMsg"
+                           v-model="inputMsg"/>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <div class="content infinite-scroll pull-to-refresh-content" data-distance="100" data-ptr-distance="55">
+        <div class="pull-to-refresh-layer">
+            <div class="preloader"></div>
+            <div class="pull-to-refresh-arrow"></div>
+        </div>
+        <div class="banner-img">
+            <header class="clearfix">
+                <span class="countdown-title" v-text="countdownTitle">暂无活动</span>
+                <time id="countdownTime"></time>
+            </header>
+            <div class="my-swiper">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide" v-for="item in publishImgs" v-on:click.stop="openImgLink">
+                        <template v-if="item.MAKE_TYPE==2">
+                            <iframe height="250" width="375" src="{{item.LINK}}" frameborder="0"
+                                    allowfullscreen></iframe>
+                        </template>
+                        <template v-else>
+                            <img alt="" class="swiper-lazy" data-src="{{item.FILE_PATH}}" data-type="{{item.TYPE}}"
+                                 data-link="{{item.LINK}}"/>
+                        </template>
+                    </div>
+                </div>
+                <div class="swiper-pagination"></div>
+                <div class="swiper-button-prev swiper-button-white"></div>
+                <div class="swiper-button-next swiper-button-white"></div>
+            </div>
+        </div>
+        <div class="tv-info clearfix">
+            <img src="default.200x200.jpg" v-bind:src="tvShowIcon"/>
+            <dl>
+                <dt v-text="tvShowName">节目名节目名</dt>
+                <dd>粉丝<span v-text="fans">0</span>&nbsp;&nbsp;帖子<span v-text="forums">0</span>&nbsp;&nbsp;在线人数<span
+                        v-text="onlines">0</span></dd>
+            </dl>
+            <ul class="clearfix">
+                <li id="game">
+                    <div class="top-harf">游戏</div>
+                    <a class="external" :href="gameURI==''?'javascript:void(0)':gameURI">
+                        <div class="bottom-harf">
+                            <i class="fa fa-gamepad"></i>
+                        </div>
+                    </a>
+                </li>
+                <li id="activeHeart">
+                    <div class="top-harf">关注</div>
+                    <div class="bottom-harf">
+                        <i class="fa {{isHeartActive}}"></i>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="buttons-tab">
+            <a href="#tab2" data-tab-id="tab2" class="tab-link active button">同款</a>
+            <a href="#tab3" data-tab-id="tab3" class="tab-link  button">主持</a>
+            <a href="#tab1" data-tab-id="tab1" class="tab-link  button">嗨吧</a>
+        </div>
+        <div class="tabs">
+            <div id="tab3" class="tab comment">
+                <ol class="on-top">
+                    <li v-for="item in onTops" track-by="ARTICLE_ID" v-text="item.TITLE" data-type="1"
+                        id="{{item.ARTICLE_ID}}" class="article-detail"></li>
+                </ol>
+                <div class="list-block">
+                    <ul class="list-container">
+                        <li class="item-content" v-for="comment in hosts | orderBy 'CREATE_DATE' -1" track-by="$index"
+                            data-index="{{$index}}" data-forumid="{{comment.FORUM_ID}}"
+                            data-memberid="{{comment.MEMBER_ID}}">
+                            <div class="item-media" v-bind:style="{backgroundImage:'url('+comment.PHOTO+')'}"></div>
+                            <div class="item-inner">
+                                <div class="item-title">
+                                    <h3 v-html="comment.NICKNAME"></h3>
+                                    <em v-text="comment.COMMENTTIME"></em>
+                                    <p v-html="comment.CONTENT"
+                                       class="{{comment.SIGN==1?'l-compere':(comment.SIGN==2?'l-guests':'')}}"></p>
+                                </div>
+                                <div class="item-after">
+                                    <i class="fa {{comment.SUPPORT_ID?'fa-heart':'fa-heart-o'}}"
+                                       data-supportid="{{comment.SUPPORT_ID}}" v-text="comment.SUPPORT">0</i>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="infinite-scroll-preloader">
+                    <div class="preloader"></div>
+                </div>
+            </div>
+            <div id="tab1" class="tab comment">
+                <ol class="on-top">
+                    <li v-for="item in onTops" track-by="ARTICLE_ID" v-text="item.TITLE" data-type="1"
+                        id="{{item.ARTICLE_ID}}" class="article-detail"></li>
+                </ol>
+                <div class="list-block">
+                    <ul class="list-container">
+                        <li class="item-content" v-for="comment in comments | orderBy 'CREATE_DATE' -1"
+                            track-by="$index" data-index="{{$index}}" data-forumid="{{comment.FORUM_ID}}"
+                            data-memberid="{{comment.MEMBER_ID}}">
+                            <div class="item-media" v-bind:style="{backgroundImage:'url('+comment.PHOTO+')'}"></div>
+                            <div class="item-inner">
+                                <div class="item-title">
+                                    <h3 v-html="comment.NICKNAME"></h3>
+                                    <em v-text="comment.COMMENTTIME"></em>
+                                    <p v-html="comment.CONTENT"
+                                       class="{{comment.SIGN==1?'l-compere':(comment.SIGN==2?'l-guests':'')}}"></p>
+                                    <ul class="reply">
+                                        <li v-for="reply in comment.childs | orderBy 'CREATE_DATE'" track-by="$index"
+                                            class="{{reply.SIGN==1?'l-compere':(reply.SIGN==2?'l-guests':'')}}"
+                                            data-forumid="{{reply.FORUM_ID}}" data-memberid="{{reply.MEMBER_ID}}">
+                                            <em class="from" v-text="reply.NICKNAME"></em><em class="to">
+                                            &nbsp;回复:</em><span v-html="reply.CONTENT"></span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="item-after">
+                                    <span>回复</span>
+                                    <i class="fa {{comment.SUPPORT_ID?'fa-heart':'fa-heart-o'}}"
+                                       data-supportid="{{comment.SUPPORT_ID}}" v-text="comment.SUPPORT">0</i>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="infinite-scroll-preloader">
+                    <div class="preloader"></div>
+                </div>
+            </div>
+            <div id="tab2" class="tab active goods">
+                <div class="list-block media-list">
+                    <div class="search-input">
+                        <label class="icon icon-search" for="search"></label>
+                        <input type="search" id='search' placeholder='搜索商品' v-model="searchKey"/>
+                    </div>
+                    <ul class="list-container">
+                        <li class="item-link item-content" v-for="good in goods" data-index="{{$index}}">
+                            <div class="item-media"><img src="" v-bind:src="good.LIST_IMG" style='width: 4rem;'></div>
+                            <div class="item-inner">
+                                <div class="item-title-row">
+                                    <div class="item-title" v-text="good.TITLE"></div>
+                                </div>
+                                <div class="item-text" v-text="good.ABOUT"></div>
+                                <div class="item-subtitle clearfix" v-if="good.IS_PROMOTE == 1">
+                                    <label v-text="good.NEW_PRICE"></label>&nbsp;
+                                    <em v-text="good.OLD_PRICE"></em>
+                                    <span>立即购买</span>
+                                </div>
+                                <div class="item-subtitle clearfix" v-else>
+                                    <label v-text="good.OLD_PRICE"></label>
+                                    <span>立即购买</span>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="infinite-scroll-preloader">
+                    <div class="preloader"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="pop" class="popup pop">
+    <div class="content-block">
+        <div class="close">×</div>
+        <section>
+            <img src="" v-bind:src="PUBLISH_IMG" v-if="showImg"/>
+            <div class="con">
+                <h3 v-text="TITLE" v-if="showTitle"></h3>
+                <h4 v-text="SUBJECT" v-if="showSubject"></h4>
+                <h4 v-text="PRICE" v-if="showPrice"></h4>
+                <div class="goods-info-content" v-text="ABOUT" v-if="showAbout"></div>
+                <div class="goods-info-content" v-if="showAnswer">
+                    <template v-for="a in answers">
+                        <input type="radio" name="answer" id="answer-{{$index}}" v-bind:value="a.ANSWER_ID">
+                        <label for="answer-{{$index}}" v-text="a.ANSWER"></label>
+                        <br>
+                    </template>
+                </div>
+            </div>
+        </section>
+        <div class="control">
+            <a href="javascript:void(0);" class="external" v-text="BTN_NOTE" v-if="showBtn"></a>
+        </div>
+    </div>
+</div>
+<div id="msgInfo" class="msg-info {{isShow?'show':''}}" data-id="{{ID}}"><em v-text="TITLE">您有新消息</em><span
+        v-html="CONTENT"></span><i class="fa fa-angle-double-left"></i></div>
+<div id="audios" style="display: none;">
+    <audio class="msg" src="msg.wav">您的浏览器不支持 audio 标签。</audio>
+    <audio class="shang" src="shang.wav">您的浏览器不支持 audio 标签。</audio>
+    <audio class="zha" src="zha.wav">您的浏览器不支持 audio 标签。</audio>
+</div>
+<script type='text/javascript' src='http://g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+<script type='text/javascript' src='http://g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
+<script type='text/javascript' src='http://g.alicdn.com/msui/sm/0.6.2/js/??sm.min.js,sm-extend.min.js'
+        charset='utf-8'></script>
+<script src="swiper-3.3.1.jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" src="fx.js" charset="utf-8"></script>
+<script type="text/javascript" src="sea.js" charset="utf-8"></script>
+<script type="text/javascript">
+    function getQueryString(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return unescape(r[2]);
+        return null;
+    }
+    getQueryString("dev") ? seajs.use('activity-debug') : seajs.use('activity');
+    function setMemberId(id) {
+        seajs.use('./base.js', function (b) {
+            b.setMemberId(id);
+        });
+    }
+    function stopAjax() {
+        seajs.use('./bind_data.js', function (b) {
+            b.stop();
+        });
+    }
+    /**
+     * 开始轮询
+     */
+    function startAjax() {
+        seajs.use('./bind_data.js', function(b) {
+            b.autoData();
+            window.autoRefreshDataInterval = window.setInterval(function() {
+                b.autoData();
+            }, 10000);
+        });
+    }
+</script>
+<div id="CNZZ" style="display: none;">
+    <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+    document.write(unescape("%3Cspan id='cnzz_stat_icon_1257189974'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1257189974%26online%3D1' type='text/javascript'%3E%3C/script%3E"));</script>
+</div>
+</body>
+
+</html>
