@@ -1,0 +1,79 @@
+@charset "utf-8";
+///************************************
+/// Sass animation
+///************************************
+
+//动画
+@mixin animation($str) {
+    -webkit-animation: #{$str};
+    -moz-animation: #{$str} ;
+    animation: #{$str};
+}
+
+//定义动画帧
+@mixin keyframes($animation-name) {
+  @-webkit-keyframes #{$animation-name} {
+    @content;
+  }
+  @-moz-keyframes #{$animation-name} {
+    @content;
+  }
+  @keyframes #{$animation-name} {
+    @content;
+  }
+}
+
+//从左侧移入
+@include keyframes('slide-right') {
+  0% {
+    -webkit-transform: translate(-100%,0);
+    -moz-transform: translate(-100%,0);
+    -ms-transform: translate(-100%,0);
+    -o-transform: translate(-100%,0);
+    transform: translate(-100%,0);
+  }
+  100% {
+    -webkit-transform: translate(0,0);
+    -moz-transform: translate(0,0);
+    -ms-transform: translate(0,0);
+    -o-transform: translate(0,0);
+    transform: translate(0,0);
+  }
+}
+
+//从右侧移出
+@include keyframes('slide-left') {
+  0% {
+    -webkit-transform: translate(0,0);
+    -moz-transform: translate(0,0);
+    -ms-transform: translate(0,0);
+    -o-transform: translate(0,0);
+    transform: translate(0,0);
+  }
+  100% {
+    -webkit-transform: translate(-100%,0);
+    -moz-transform: translate(-100%,0);
+    -ms-transform: translate(-100%,0);
+    -o-transform: translate(-100%,0);
+    transform: translate(-100%,0);
+  }
+}
+
+//从右侧移出
+@include keyframes('warning') {
+  0% {
+    box-shadow: 0;
+  }
+  25% {
+    box-shadow: 0rem .01rem .5rem rgba(255, 0, 0, 0.4),0rem -.01rem .5rem rgba(255, 0, 0, 0.4);
+  }
+  50% {
+    box-shadow: 0;
+  }
+  75% {
+    box-shadow: 0rem .01rem .5rem rgba(255, 0, 0, 0.4),0rem -.01rem .5rem rgba(255, 0, 0, 0.4);
+  }
+  100% {
+    box-shadow: 0;
+  }
+}
