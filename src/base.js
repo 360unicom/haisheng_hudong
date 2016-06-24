@@ -1,7 +1,7 @@
 define(function (require, exports, module) {
     module.exports = {
         "uri": {
-            "base_data": "app/redis/activity/interaction", //基础数据，http://note.youdao.com/groupshare/?token=5D955D4B704E4C23B2C1BB9435F9D41F&gid=2801912
+            "base_data": "app/activity/interaction", //基础数据，http://note.youdao.com/groupshare/?token=5D955D4B704E4C23B2C1BB9435F9D41F&gid=2801912
             "ping_lun": "app/forum/listForumByActivity", //评论列表 资讯前三 分页,http://note.youdao.com/groupshare/?token=7FAAF61EE1D04032AE7E7256DF66F4D6&gid=2801912
             "hosts_forum":"app/forum/hostsForum",//主持嘉宾评论列表
             "tong_kuan": "app/similar/listByActivity", //同款,http://note.youdao.com/groupshare/?token=C99D85BA22424159B1F9FACA497DA4FF&gid=2801912
@@ -13,12 +13,13 @@ define(function (require, exports, module) {
             "praise_or_fine": "app/activity/PraiseOrFine", //活动 赏、砸,http://note.youdao.com/groupshare/?token=90F35CA3FF9D4D4C8CF9B155B2E775F1&gid=2801912
             "submitAnswer": "app/questionnaire/submitAnswer", //提交问卷
             "addAcceptRecord": "app/received_records/save", //保存接收记录
+            "memberInfo": "app/member/findById", //用户信息
             //[Leo]修改接口Hosts
-            //"host": "http://127.0.0.1:8080/t2o/"
+            "host": "http://127.0.0.1:8080/t2o/"
             //"host": "http://192.168.0.125:8080/t2o/" //蒋丽坤
             //"host": "http://123.57.89.97:8080/t2o/" //测试服务器地址
             //"host": "http://123.57.172.249:8080/t2o/" //正式服务器地址
-            "host": "http://highsheng.com:8080/t2o/" //正式服务器地址
+            //"host": "http://highsheng.com:8080/t2o/" //正式服务器地址
 
             /**
              * http://leo/haisheng_hudong_min_v1.1.3/dist/activity.html?ACTIVITY_ID=67dcd7880d1a4a95a2caa35e4a256a93&MEMBER_ID=9e4214c271694660a068b9c6faf6747c&PHONE_TYPE=BlackBerry
@@ -44,7 +45,11 @@ define(function (require, exports, module) {
             "currentPageHosts": 0, //主持评论当前页
             "currentPageComments": 0, //评论当前页
             "currentPageGoods": 0, //同款当前页
-            "showCount": 10 //分页条数
+            "showCount": 10 ,//分页条数
+            
+            "PHOTO" : "", //头像
+            "NICKNAME" : "",//昵称
+            "MEMBER_NAME" : ""//用户名
         },
         "vars": {
             "$audios": $('#audios'), //音效
@@ -166,6 +171,29 @@ define(function (require, exports, module) {
                 return false;
             }
             return true;
+        },
+        "memberInfo": function () {
+            var mId = this.params.MEMBER_ID;
+            var $this = this;
+            if (mId != '' && mId != "(null)" && mId != "null" && mId != null && mId != undefined) {
+                $.ajax({
+                	type:"post",
+                	url:this.getUrl('memberInfo'),
+                	async:false,
+                	data:{MEMBER_ID : mId},
+                	dataType: 'json',
+                	success : function (data){
+                		console.log(data.PHOTO);
+                		if(data.result == 'success'){
+                			$this.params.PHOTO = data.PHOTO;
+                			$this.params.NICKNAME = data.NICKNAME;
+                			$this.params.MEMBER_NAME = data.MEMBER_NAME;
+                		}
+                	}
+                });
+                return true;
+            }
+            return false;
         },
         "setMemberId": function (id) { //提供给APP调用登陆回调
             this.params.MEMBER_ID = id;

@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
-<html manifest="manifest.appcache">
-
+<!--<html manifest="manifest.appcache">-->
+<html>
 <head>
     <meta charset="utf-8">
     <meta name="format-detection" content="telephone=no"/>
@@ -14,8 +14,8 @@
     <link rel="stylesheet" type="text/css" href="main.css"/>
     <link rel="stylesheet" type="text/css" async href="font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="swiper-3.3.1.min.css"/>
-    <link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">
-    <link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/??sm.min.css,sm-extend.min.css">
+    <link rel="stylesheet" href="http://g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">
+    <link rel="stylesheet" href="http://g.alicdn.com/msui/sm/0.6.2/css/??sm.min.css,sm-extend.min.css">
     <link rel="stylesheet" type="text/css" href="activity.css">
 </head>
 
@@ -97,7 +97,7 @@
                 </ol>
                 <div class="list-block">
                     <ul class="list-container">
-                        <li class="item-content" v-for="comment in hosts | orderBy 'CREATE_DATE' -1" track-by="$index"
+                        <!--<li class="item-content" v-for="comment in hosts | orderBy 'CREATE_DATE' -1" track-by="$index"
                             data-index="{{$index}}" data-forumid="{{comment.FORUM_ID}}"
                             data-memberid="{{comment.MEMBER_ID}}">
                             <div class="item-media" v-bind:style="{backgroundImage:'url('+comment.PHOTO+')'}"></div>
@@ -113,7 +113,7 @@
                                        data-supportid="{{comment.SUPPORT_ID}}" v-text="comment.SUPPORT">0</i>
                                 </div>
                             </div>
-                        </li>
+                        </li>-->
                     </ul>
                 </div>
                 <div class="infinite-scroll-preloader">
@@ -126,30 +126,14 @@
                         id="{{item.ARTICLE_ID}}" class="article-detail"></li>
                 </ol>
                 <div class="list-block">
-                    <ul class="list-container">
-                        <li class="item-content" v-for="comment in comments | orderBy 'CREATE_DATE' -1"
-                            track-by="$index" data-index="{{$index}}" data-forumid="{{comment.FORUM_ID}}"
-                            data-memberid="{{comment.MEMBER_ID}}">
+                    <ul class="list-container print-wall">
+                    	<li class="item-content" v-for="comment in comments" >
                             <div class="item-media" v-bind:style="{backgroundImage:'url('+comment.PHOTO+')'}"></div>
                             <div class="item-inner">
                                 <div class="item-title">
                                     <h3 v-html="comment.NICKNAME"></h3>
                                     <em v-text="comment.COMMENTTIME"></em>
-                                    <p v-html="comment.CONTENT"
-                                       class="{{comment.SIGN==1?'l-compere':(comment.SIGN==2?'l-guests':'')}}"></p>
-                                    <ul class="reply">
-                                        <li v-for="reply in comment.childs | orderBy 'CREATE_DATE'" track-by="$index"
-                                            class="{{reply.SIGN==1?'l-compere':(reply.SIGN==2?'l-guests':'')}}"
-                                            data-forumid="{{reply.FORUM_ID}}" data-memberid="{{reply.MEMBER_ID}}">
-                                            <em class="from" v-text="reply.NICKNAME"></em><em class="to">
-                                            &nbsp;回复:</em><span v-html="reply.CONTENT"></span>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="item-after">
-                                    <span>回复</span>
-                                    <i class="fa {{comment.SUPPORT_ID?'fa-heart':'fa-heart-o'}}"
-                                       data-supportid="{{comment.SUPPORT_ID}}" v-text="comment.SUPPORT">0</i>
+                                    <p v-html="comment.CONTENT"></p>
                                 </div>
                             </div>
                         </li>
@@ -224,11 +208,17 @@
     <audio class="shang" src="shang.wav">您的浏览器不支持 audio 标签。</audio>
     <audio class="zha" src="zha.wav">您的浏览器不支持 audio 标签。</audio>
 </div>
-<script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
-<script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
-<script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/??sm.min.js,sm-extend.min.js'
+<script type='text/javascript' src='http://g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+<script type='text/javascript' src='http://g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
+<script type='text/javascript' src='http://g.alicdn.com/msui/sm/0.6.2/js/??sm.min.js,sm-extend.min.js'
         charset='utf-8'></script>
 <script src="swiper-3.3.1.jquery.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- 实时通信 -->
+<script src="../node_modules/leancloud-storage/dist/av.js"></script>
+<script src="../node_modules/leancloud-realtime/dist/realtime.browser.js"></script>
+<script src="../node_modules/leancloud-realtime-typed-messages/dist/typed-messages.js"></script>
+<!-- end -->
 <script type="text/javascript" src="fx.js" charset="utf-8"></script>
 <script type="text/javascript" src="sea.js" charset="utf-8"></script>
 <script type="text/javascript">

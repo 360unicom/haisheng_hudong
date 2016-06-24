@@ -3,6 +3,7 @@ define(function (require, exports, module) {
     var countdown = require('./countdown'); //倒计时
     //var reward = require('./reward'); //打赏
     var time = require('./date'); //时间格式转换
+    var chitchat = require('./chitchat'); //聊天初始化
 
     /**
      * 停止轮询
@@ -135,11 +136,11 @@ define(function (require, exports, module) {
                 autoBindHosts(res);//获取并绑定主持人评论
 
                 //评论排序
-                base.vModel.comments.sort(function (a, b) {
-                    var d1 = new Date(a['CREATE_DATE'].replace(/\-/g, "\/"));
-                    var d2 = new Date(b['CREATE_DATE'].replace(/\-/g, "\/"));
-                    return d1 < d2 ? 1 : d1 == d2 ? 0 : -1;
-                });
+//              base.vModel.comments.sort(function (a, b) {
+//                  var d1 = new Date(a['CREATE_DATE'].replace(/\-/g, "\/"));
+//                  var d2 = new Date(b['CREATE_DATE'].replace(/\-/g, "\/"));
+//                  return d1 < d2 ? 1 : d1 == d2 ? 0 : -1;
+//              });
 
                 //设置倒计时弹窗数据绑定
                 if (!!res.poplayer) {
@@ -432,48 +433,65 @@ define(function (require, exports, module) {
      * 获取评论列表
      */
     function getTab1Items() {
-        $.ajax({
-            type: "get",
-            url: base.getUrl("ping_lun"),
-            data: {
-                "ACTIVITY_ID": base.params.ACTIVITY_ID,
-                "MEMBER_ID": base.params.MEMBER_ID,
-                "TYPE": 2,
-                "showCount": base.params.showCount,
-                "currentPage": ++base.params.currentPageComments
-            },
-            async: true,
-            success: function (res) {
-                //参数错误
-                if (res.status == "error") {
-                    $.toast(res.msg);
-                    return;
-                }
-                //article
-                if (res.article) {
-                    /*for (var i = 0, len = res.article.length; i < len; i++) {
-                     base.vModel.onTops.push(res.article[i]);
-                     }*/
-                    base.vModel.$set("onTops", res.article);
-                }
-                //所有数据加载完成
-                //[Leo] 加载完所有页的数据应该接口没有返回数据
-                if (base.params.currentPageComments > res.totalPage) {
-                    //$.toast("没有更多评论啦");
-                    // 加载完毕，则注销无限加载事件，以防不必要的加载
-                    //$.detachInfiniteScroll($('.infinite-scroll'));
-                    // 删除加载提示符
-                    $('#tab1 .infinite-scroll-preloader').remove();
-                    return;
-                }
-                //forum
-                addItemsToTab1(res);
-
-                base.vars.loading = false; // 重置加载flag
-                $.refreshScroller(); //刷新列表滚动状态
-                $.pullToRefreshDone('.pull-to-refresh-content'); //重置下拉刷新状态
-            }
-        });
+    	//登入
+	    if (!base.isLogin()) {
+			return false;
+		}
+		$.showIndicator(); //显示指示器 modal
+    	if(base.params.MEMBER_NAME == '' && base.params.NICKNAME == '' && base.params.PHOTO == ''){
+    		base.memberInfo();
+    	}
+    	chitchat.loginChat(base.params.MEMBER_ID);
+    	$('#activePage nav').css('display','block');
+		$('.bar-tab~.content').css('bottom','2.5rem');
+		
+    	//隐藏/关闭指示器 modal
+		$.hideIndicator();
+		
+		
+    	
+//      $.ajax({
+//          type: "get",
+//          url: base.getUrl("ping_lun"),
+//          data: {
+//              "ACTIVITY_ID": base.params.ACTIVITY_ID,
+//              "MEMBER_ID": base.params.MEMBER_ID,
+//              "TYPE": 2,
+//              "showCount": base.params.showCount,
+//              "currentPage": ++base.params.currentPageComments
+//          },
+//          async: true,
+//          success: function (res) {
+//              //参数错误
+//              if (res.status == "error") {
+//                  $.toast(res.msg);
+//                  return;
+//              }
+//              //article
+//              if (res.article) {
+//                  /*for (var i = 0, len = res.article.length; i < len; i++) {
+//                   base.vModel.onTops.push(res.article[i]);
+//                   }*/
+//                  base.vModel.$set("onTops", res.article);
+//              }
+//              //所有数据加载完成
+//              //[Leo] 加载完所有页的数据应该接口没有返回数据
+//              if (base.params.currentPageComments > res.totalPage) {
+//                  //$.toast("没有更多评论啦");
+//                  // 加载完毕，则注销无限加载事件，以防不必要的加载
+//                  //$.detachInfiniteScroll($('.infinite-scroll'));
+//                  // 删除加载提示符
+//                  $('#tab1 .infinite-scroll-preloader').remove();
+//                  return;
+//              }
+//              //forum
+//              addItemsToTab1(res);
+//
+//              base.vars.loading = false; // 重置加载flag
+//              $.refreshScroller(); //刷新列表滚动状态
+//              $.pullToRefreshDone('.pull-to-refresh-content'); //重置下拉刷新状态
+//          }
+//      });
     }
 
     /**
@@ -519,19 +537,25 @@ define(function (require, exports, module) {
     }
 
     /**
-     * 添加、刷新列表项
+     * 添加列表项
      */
     function addItems() {
         base.vars.curTab = $('.buttons-tab').find('.active').attr('data-tab-id');
         console.log('[leo]当前标签页=>',base.vars.curTab)
         switch (base.vars.curTab) {
             case 'tab1':
+            	if(!base.isLogin()){
+            		break;
+            	}
                 getTab1Items();
                 break;
             case 'tab2':
                 getTab2Items();
                 break;
             case 'tab3':
+            	if(!base.isLogin()){
+            		break;
+            	}
                 getTab3Items();
                 break;
         }
@@ -671,9 +695,9 @@ define(function (require, exports, module) {
         base.vModel.$set('goods', []);
         //绑定数据
         //getBaseData();
-        getTab1Items();
+        //getTab1Items();
         getTab2Items();
-        getTab3Items();
+       // getTab3Items();
         $('#tab2').on('blur', '#search', function () {
             base.vModel.$set('goods', []);
             getTab2Items();
