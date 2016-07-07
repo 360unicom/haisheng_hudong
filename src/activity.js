@@ -10,9 +10,7 @@ define(function(require, exports, module) {
 	var infinite = require('./infinite'); //上拉加载更多
 	var bindData = require('./bind_data'); //绑定数据
 	var setHeart = require('./set_heart'); //设置关注、点赞
-	var chat_init = require('./chitchat_init'); //聊天初始化
-	var chitchat = require('./chitchat'); //聊天
-	//var comment = require('./comment'); //评论
+	var comment = require('./comment'); //评论
 	//var reward = require('./reward'); //打赏
 	var pop = require('./popup'); //弹出层
 
@@ -91,9 +89,7 @@ define(function(require, exports, module) {
 			});
 
 			//评论
-			//comment.init();
-			//聊天
-			chat_init.init();
+			comment.init();
 
 			//评论点赞
 			$('#tab1').one('click', '.item-after .fa', function() {
@@ -216,12 +212,6 @@ define(function(require, exports, module) {
 			//	}
 			//	return false;
 			//});
-			
-			
-			/**
-			 * 聊天页面初始化
-			 */
-			chitchat.init();
 		});
 
 		//SUI初始化，必须放在pageInit后面
