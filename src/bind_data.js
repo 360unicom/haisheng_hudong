@@ -436,6 +436,7 @@ define(function (require, exports, module) {
     function getTab1Items() {
     	//登入
 	    if (!base.isLogin()) {
+	    	$('.buttons-tab a[data-tab-id="tab2"]').click();
 			return false;
 		}
 		$.showIndicator(); //显示指示器 modal
@@ -499,6 +500,7 @@ define(function (require, exports, module) {
     	
     	//登入
 	    if (!base.isLogin()) {
+	    	$('.buttons-tab a[data-tab-id="tab2"]').click();
 			return false;
 		}
 		$.showIndicator(); //显示指示器 modal
@@ -724,7 +726,10 @@ define(function (require, exports, module) {
 	        switch (base.vars.curTab) {
 	            case 'tab1':
 	            	if(!base.vars.common_flag){
-	            		getTab1Items();
+	            		//getTab1Items();
+	            		if(getTab1Items() == false){
+	            			return false;
+	            		}
 	            	}
 	            	if(base.params.SIGN.toString() == ''){
 	            		$nav.css('display','none');
@@ -736,7 +741,10 @@ define(function (require, exports, module) {
 	                break;
 	            case 'tab3':
 	            	if(!base.vars.host_flag){
-	            		getTab3Items();
+//	            		getTab3Items();
+	            		if(getTab3Items() == false){
+	            			return false;
+	            		}
 	            	}
 	            	if(base.params.SIGN == '1' || base.params.SIGN == '2'){
 	            		$nav.css('display','block');
