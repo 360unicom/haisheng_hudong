@@ -1,7 +1,7 @@
 define(function (require, exports, module) {
     module.exports = {
         "uri": {
-            "base_data": "app/redis/activity/interaction", //基础数据，http://note.youdao.com/groupshare/?token=5D955D4B704E4C23B2C1BB9435F9D41F&gid=2801912
+            "base_data": "app/activity/interaction", //基础数据，http://note.youdao.com/groupshare/?token=5D955D4B704E4C23B2C1BB9435F9D41F&gid=2801912
             "ping_lun": "app/forum/listForumByActivity", //评论列表 资讯前三 分页,http://note.youdao.com/groupshare/?token=7FAAF61EE1D04032AE7E7256DF66F4D6&gid=2801912
             "hosts_forum":"app/forum/hostsForum",//主持嘉宾评论列表
             "tong_kuan": "app/similar/listByActivity", //同款,http://note.youdao.com/groupshare/?token=C99D85BA22424159B1F9FACA497DA4FF&gid=2801912
@@ -13,6 +13,8 @@ define(function (require, exports, module) {
             "praise_or_fine": "app/activity/PraiseOrFine", //活动 赏、砸,http://note.youdao.com/groupshare/?token=90F35CA3FF9D4D4C8CF9B155B2E775F1&gid=2801912
             "submitAnswer": "app/questionnaire/submitAnswer", //提交问卷
             "addAcceptRecord": "app/received_records/save", //保存接收记录
+            "memberInfo": "app/member/findById", //用户信息
+            "creatRoomId": "app/activity/createChat", //用户信息
             //[Leo]修改接口Hosts
             //"host": "http://127.0.0.1:8080/t2o/"
             //"host": "http://192.168.0.125:8080/t2o/" //蒋丽坤
@@ -44,9 +46,15 @@ define(function (require, exports, module) {
             "currentPageHosts": 0, //主持评论当前页
             "currentPageComments": 0, //评论当前页
             "currentPageGoods": 0, //同款当前页
-            "showCount": 10 //分页条数
+            "showCount": 10 ,//分页条数
+            
+            "PHOTO" : "", //头像
+            "NICKNAME" : "",//昵称
+            "MEMBER_NAME" : "",//用户名
+            "SIGN":"" //用户身份
         },
         "vars": {
+        	"activityTitle" : '',//活动名
             "$audios": $('#audios'), //音效
             "msgAudio": $('.msg', this.$audios)[0], //消息音效
             "shangAudio": $('.shang', this.$audios)[0], //砸鸡蛋音效
@@ -59,7 +67,11 @@ define(function (require, exports, module) {
             "TOTAL_VALUE": 1000, //打赏最高分
             "OPPOSE_VALUE": 0, //打的总分
             "SUPPORT_VALUE": 0, //赏的总分
-            "PROPS_SCORE": 10 //打赏道具的分值
+            "PROPS_SCORE": 10, //打赏道具的分值
+            "realtime" : null, //聊天初始化
+            "common_flag" : false, //嗨吧服务器连接
+            "host_flag" : false, //主持服务器连接
+            "str_at" : '' //at用户id
         },
         "initCloseData": function () {
             $.closeModal('.pop');
@@ -167,12 +179,38 @@ define(function (require, exports, module) {
             }
             return true;
         },
+        "memberInfo": function () {
+            var mId = this.params.MEMBER_ID;
+            var $this = this;
+            if (mId != '' && mId != "(null)" && mId != "null" && mId != null && mId != undefined) {
+                $.ajax({
+                	type:"post",
+                	url:this.getUrl('memberInfo'),
+                	async:false,
+                	data:{MEMBER_ID : mId},
+                	dataType: 'json',
+                	success : function (data){
+                		console.log(data.PHOTO);
+                		if(data.result == 'success'){
+                			$this.params.PHOTO = data.PHOTO;
+                			$this.params.NICKNAME = data.NICKNAME;
+                			$this.params.MEMBER_NAME = data.MEMBER_NAME;
+                			$this.params.SIGN = data.SIGN;
+                		}
+                	}
+                });
+                return true;
+            }
+            return false;
+        },
         "setMemberId": function (id) { //提供给APP调用登陆回调
             this.params.MEMBER_ID = id;
         },
         "vModel": new Vue({
             el: "#activePage",
             data: {
+            	hostRoomId : '',//主持房间id
+            	commonRoomId : '',//嗨吧房间id
                 gameURI: "", //游戏外链
                 countdownTitle: "暂无活动", //倒计时标题
                 countdownTime: "", //倒计时时间

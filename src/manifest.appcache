@@ -1,0 +1,43 @@
+CACHE MANIFEST
+# 2016-6-23 09:08:47 v1.0.0
+# 注释：需要缓存的文件，无论在线与否，均从缓存里读取
+activity.css
+font-awesome.min.css
+main.css
+swiper-3.3.1.min.css
+fontawesome-webfont.eot
+default.200x200.jpg
+default.750x500.jpg
+activity.js
+activity-debug.js
+fx.js
+gauge.min.js
+sea.js
+sea-debug.js
+swiper-3.3.1.jquery.min.js
+vue.js
+vue-debug.js
+FontAwesome.otf
+danke1.png
+danke2.png
+dantang.png
+haojidan.png
+jinbi.png
+shang.png
+zha.png
+fontawesome-webfont.svg
+fontawesome-webfont.ttf
+msg.wav
+shang.wav
+zha.wav
+fontawesome-webfont.woff
+fontawesome-webfont.woff2
+http://g.alicdn.com/msui/sm/0.5.8/css/sm.min.css
+http://g.alicdn.com/msui/sm/0.5.8/css/sm-extend.min.css
+http://g.alicdn.com/sj/lib/zepto/zepto.min.js
+http://g.alicdn.com/msui/sm/0.5.8/js/sm.min.js
+http://g.alicdn.com/msui/sm/0.5.8/js/sm-extend.min.js
+
+NETWORK:
+# 注释：不缓存的文件，无论缓存中存在与否，均从新获取
+*

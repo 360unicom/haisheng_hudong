@@ -10,6 +10,7 @@ define(function(require, exports, module) {
 		if (base.vars.loading) return; // 如果正在加载，则退出
 		base.vars.loading = true; // 设置正在加载flag
 		bindData.addItems();
+
 	}
 
 	exports.set = infinite;

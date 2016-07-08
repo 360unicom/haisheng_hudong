@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
-<html manifest="manifest.appcache">
-
+<!--<html manifest="manifest.appcache">-->
+<html>
 <head>
     <meta charset="utf-8">
     <meta name="format-detection" content="telephone=no"/>
@@ -14,8 +14,8 @@
     <link rel="stylesheet" type="text/css" href="main.css"/>
     <link rel="stylesheet" type="text/css" async href="font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="swiper-3.3.1.min.css"/>
-    <link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">
-    <link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/??sm.min.css,sm-extend.min.css">
+    <link rel="stylesheet" href="http://g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">
+    <link rel="stylesheet" href="http://g.alicdn.com/msui/sm/0.6.2/css/??sm.min.css,sm-extend.min.css">
     <link rel="stylesheet" type="text/css" href="activity.css">
 </head>
 
@@ -64,8 +64,9 @@
             <img src="default.200x200.jpg" v-bind:src="tvShowIcon"/>
             <dl>
                 <dt v-text="tvShowName">节目名节目名</dt>
-                <dd>粉丝<span v-text="fans">0</span>&nbsp;&nbsp;帖子<span v-text="forums">0</span>&nbsp;&nbsp;在线人数<span
-                        v-text="onlines">0</span></dd>
+                <dd>在线人数<span v-text="onlines">0</span></dd>
+                <!--<dd>粉丝<span v-text="fans">0</span>&nbsp;&nbsp;帖子<span v-text="forums">0</span>&nbsp;&nbsp;在线人数<span
+                        v-text="onlines">0</span></dd>-->
             </dl>
             <ul class="clearfix">
                 <li id="game">
@@ -86,8 +87,8 @@
         </div>
         <div class="buttons-tab">
             <a href="#tab2" data-tab-id="tab2" class="tab-link active button">同款</a>
-            <a href="#tab3" data-tab-id="tab3" class="tab-link  button">主持</a>
-            <a href="#tab1" data-tab-id="tab1" class="tab-link  button">嗨吧</a>
+            <a href="#tab3" data-tab-id="tab3" data-room="{{hostRoomId}}" data-power="1"  class="tab-link  button">主持</a>
+            <a href="#tab1" data-tab-id="tab1" data-room="{{commonRoomId}}"  data-power="0" class="tab-link  button">嗨吧</a>
         </div>
         <div class="tabs">
             <div id="tab3" class="tab comment">
@@ -95,22 +96,17 @@
                     <li v-for="item in onTops" track-by="ARTICLE_ID" v-text="item.TITLE" data-type="1"
                         id="{{item.ARTICLE_ID}}" class="article-detail"></li>
                 </ol>
-                <div class="list-block">
+                <div class="list-block" style="min-height: 220px;">
                     <ul class="list-container">
-                        <li class="item-content" v-for="comment in hosts | orderBy 'CREATE_DATE' -1" track-by="$index"
-                            data-index="{{$index}}" data-forumid="{{comment.FORUM_ID}}"
-                            data-memberid="{{comment.MEMBER_ID}}">
+                        <li class="item-content" v-for="comment in hosts" data-memberid="{{comment.MEMBER_ID}}"
+                        	data-forumid="{{comment.FORUM_ID}}">
                             <div class="item-media" v-bind:style="{backgroundImage:'url('+comment.PHOTO+')'}"></div>
                             <div class="item-inner">
                                 <div class="item-title">
                                     <h3 v-html="comment.NICKNAME"></h3>
                                     <em v-text="comment.COMMENTTIME"></em>
                                     <p v-html="comment.CONTENT"
-                                       class="{{comment.SIGN==1?'l-compere':(comment.SIGN==2?'l-guests':'')}}"></p>
-                                </div>
-                                <div class="item-after">
-                                    <i class="fa {{comment.SUPPORT_ID?'fa-heart':'fa-heart-o'}}"
-                                       data-supportid="{{comment.SUPPORT_ID}}" v-text="comment.SUPPORT">0</i>
+                                    	class="{{comment.SIGN==1?'l-compere':(comment.SIGN==2?'l-guests':'')}}"></p>
                                 </div>
                             </div>
                         </li>
@@ -126,30 +122,16 @@
                         id="{{item.ARTICLE_ID}}" class="article-detail"></li>
                 </ol>
                 <div class="list-block">
-                    <ul class="list-container">
-                        <li class="item-content" v-for="comment in comments | orderBy 'CREATE_DATE' -1"
-                            track-by="$index" data-index="{{$index}}" data-forumid="{{comment.FORUM_ID}}"
-                            data-memberid="{{comment.MEMBER_ID}}">
+                    <ul class="list-container print-wall">
+                    	<li class="item-content" v-for="comment in comments" data-memberid="{{comment.MEMBER_ID}}"
+                    		data-forumid="{{comment.FORUM_ID}}">
                             <div class="item-media" v-bind:style="{backgroundImage:'url('+comment.PHOTO+')'}"></div>
                             <div class="item-inner">
                                 <div class="item-title">
                                     <h3 v-html="comment.NICKNAME"></h3>
                                     <em v-text="comment.COMMENTTIME"></em>
                                     <p v-html="comment.CONTENT"
-                                       class="{{comment.SIGN==1?'l-compere':(comment.SIGN==2?'l-guests':'')}}"></p>
-                                    <ul class="reply">
-                                        <li v-for="reply in comment.childs | orderBy 'CREATE_DATE'" track-by="$index"
-                                            class="{{reply.SIGN==1?'l-compere':(reply.SIGN==2?'l-guests':'')}}"
-                                            data-forumid="{{reply.FORUM_ID}}" data-memberid="{{reply.MEMBER_ID}}">
-                                            <em class="from" v-text="reply.NICKNAME"></em><em class="to">
-                                            &nbsp;回复:</em><span v-html="reply.CONTENT"></span>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="item-after">
-                                    <span>回复</span>
-                                    <i class="fa {{comment.SUPPORT_ID?'fa-heart':'fa-heart-o'}}"
-                                       data-supportid="{{comment.SUPPORT_ID}}" v-text="comment.SUPPORT">0</i>
+                                    	class="{{comment.SIGN==1?'l-compere':(comment.SIGN==2?'l-guests':'')}}"></p>
                                 </div>
                             </div>
                         </li>
@@ -224,11 +206,17 @@
     <audio class="shang" src="shang.wav">您的浏览器不支持 audio 标签。</audio>
     <audio class="zha" src="zha.wav">您的浏览器不支持 audio 标签。</audio>
 </div>
-<script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
-<script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
-<script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/??sm.min.js,sm-extend.min.js'
+<script type='text/javascript' src='http://g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+<script type='text/javascript' src='http://g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
+<script type='text/javascript' src='http://g.alicdn.com/msui/sm/0.6.2/js/??sm.min.js,sm-extend.min.js'
         charset='utf-8'></script>
 <script src="swiper-3.3.1.jquery.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- 实时通信 -->
+<script src="../node_modules/leancloud-storage/dist/av.js"></script>
+<script src="../node_modules/leancloud-realtime/dist/realtime.browser.js"></script>
+<script src="../node_modules/leancloud-realtime-typed-messages/dist/typed-messages.js"></script>
+<!-- end -->
 <script type="text/javascript" src="fx.js" charset="utf-8"></script>
 <script type="text/javascript" src="sea.js" charset="utf-8"></script>
 <script type="text/javascript">
@@ -240,8 +228,8 @@
     }
     getQueryString("dev") ? seajs.use('activity-debug') : seajs.use('activity');
     function setMemberId(id) {
-        seajs.use('./base.js', function (b) {
-            b.setMemberId(id);
+        seajs.use('./bind_data.js', function (b) {
+            b.memberLogin(id);
         });
     }
     function stopAjax() {

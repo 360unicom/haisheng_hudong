@@ -3,6 +3,7 @@ define(function (require, exports, module) {
     var countdown = require('./countdown'); //倒计时
     //var reward = require('./reward'); //打赏
     var time = require('./date'); //时间格式转换
+    var chitchat = require('./chitchat'); //聊天初始化
 
     /**
      * 停止轮询
@@ -12,6 +13,7 @@ define(function (require, exports, module) {
         base.vars.autoRefreshDataAjax.abort(); //停止轮询ajax
         //console.log("[leo]已停止轮询和ajax");
     }
+    
 
     /**
      * 绑定普通用户评论
@@ -131,15 +133,15 @@ define(function (require, exports, module) {
                 	} catch (e) {}
                 }*/
 
-                autoBindForum(res);//获取并绑定普通用户最新评论
-                autoBindHosts(res);//获取并绑定主持人评论
+//              autoBindForum(res);//获取并绑定普通用户最新评论
+//              autoBindHosts(res);//获取并绑定主持人评论
 
                 //评论排序
-                base.vModel.comments.sort(function (a, b) {
-                    var d1 = new Date(a['CREATE_DATE'].replace(/\-/g, "\/"));
-                    var d2 = new Date(b['CREATE_DATE'].replace(/\-/g, "\/"));
-                    return d1 < d2 ? 1 : d1 == d2 ? 0 : -1;
-                });
+//              base.vModel.comments.sort(function (a, b) {
+//                  var d1 = new Date(a['CREATE_DATE'].replace(/\-/g, "\/"));
+//                  var d2 = new Date(b['CREATE_DATE'].replace(/\-/g, "\/"));
+//                  return d1 < d2 ? 1 : d1 == d2 ? 0 : -1;
+//              });
 
                 //设置倒计时弹窗数据绑定
                 if (!!res.poplayer) {
@@ -147,9 +149,9 @@ define(function (require, exports, module) {
                 }
 
                 //设置消息提醒
-                if (!!res.message && !!res.message.length) {
-                    showMsgInfo(res.message);
-                }
+//              if (!!res.message && !!res.message.length) {
+//                  showMsgInfo(res.message);
+//              }
             }
         });
     }
@@ -432,6 +434,17 @@ define(function (require, exports, module) {
      * 获取评论列表
      */
     function getTab1Items() {
+    	//登入
+	    if (!base.isLogin()) {
+			return false;
+		}
+		$.showIndicator(); //显示指示器 modal
+    	if(base.params.MEMBER_NAME == '' && base.params.NICKNAME == '' && base.params.PHOTO == ''){
+    		base.memberInfo();
+    	}
+    	chitchat.loginChat(base.params.MEMBER_ID,base.vModel.commonRoomId,'0');
+		
+    	
         $.ajax({
             type: "get",
             url: base.getUrl("ping_lun"),
@@ -456,19 +469,22 @@ define(function (require, exports, module) {
                      }*/
                     base.vModel.$set("onTops", res.article);
                 }
-                //所有数据加载完成
-                //[Leo] 加载完所有页的数据应该接口没有返回数据
-                if (base.params.currentPageComments > res.totalPage) {
-                    //$.toast("没有更多评论啦");
-                    // 加载完毕，则注销无限加载事件，以防不必要的加载
-                    //$.detachInfiniteScroll($('.infinite-scroll'));
-                    // 删除加载提示符
-                    $('#tab1 .infinite-scroll-preloader').remove();
-                    return;
-                }
-                //forum
-                addItemsToTab1(res);
+//              //所有数据加载完成
+//              //[Leo] 加载完所有页的数据应该接口没有返回数据
+//              if (base.params.currentPageComments > res.totalPage) {
+//                  //$.toast("没有更多评论啦");
+//                  // 加载完毕，则注销无限加载事件，以防不必要的加载
+//                  //$.detachInfiniteScroll($('.infinite-scroll'));
+//                  // 删除加载提示符
+//                  $('#tab1 .infinite-scroll-preloader').remove();
+//                  return;
+//              }
+//              //forum
+//              addItemsToTab1(res);
 
+				//隐藏/关闭指示器 modal
+				$.hideIndicator();
+		
                 base.vars.loading = false; // 重置加载flag
                 $.refreshScroller(); //刷新列表滚动状态
                 $.pullToRefreshDone('.pull-to-refresh-content'); //重置下拉刷新状态
@@ -480,62 +496,90 @@ define(function (require, exports, module) {
      * 获取主持、嘉宾评论列表
      */
     function getTab3Items() {
-        //console.log("[leo]=>进入主持评论列表")
-        $.ajax({
-            type: "get",
-            url: base.getUrl("hosts_forum"),
-            data: {
-                "ACTIVITY_ID": base.params.ACTIVITY_ID,
-                "MEMBER_ID": base.params.MEMBER_ID,
-                "TYPE": 2,
-                "showCount": base.params.showCount,
-                "currentPage": ++base.params.currentPageHosts
-            },
-            async: true,
-            success: function (res) {
-                //参数错误
-                if (res.status == "error") {
-                    $.toast(res.msg);
-                    return;
-                }
-                //所有数据加载完成
-                //[Leo] 加载完所有页的数据应该接口没有返回数据
-                if (base.params.currentPageHosts > res.totalPage) {
-                    //$.toast("没有更多评论啦");
-                    // 加载完毕，则注销无限加载事件，以防不必要的加载
-                    //$.detachInfiniteScroll($('.infinite-scroll'));
-                    // 删除加载提示符
-                    $('#tab3 .infinite-scroll-preloader').remove();
-                    return;
-                }
-                //forum
-                addItemsToTab3(res);
-
-                base.vars.loading = false; // 重置加载flag
-                $.refreshScroller(); //刷新列表滚动状态
-                $.pullToRefreshDone('.pull-to-refresh-content'); //重置下拉刷新状态
-            }
-        });
+    	
+    	//登入
+	    if (!base.isLogin()) {
+			return false;
+		}
+		$.showIndicator(); //显示指示器 modal
+    	if(base.params.MEMBER_NAME == '' && base.params.NICKNAME == '' && base.params.PHOTO == ''){
+    		base.memberInfo();
+    	}
+    	chitchat.loginChat(base.params.MEMBER_ID,base.vModel.hostRoomId,'1');
+		
+    	//隐藏/关闭指示器 modal
+		$.hideIndicator();
+		
+		base.vars.loading = false; // 重置加载flag
+        $.refreshScroller(); //刷新列表滚动状态
+        $.pullToRefreshDone('.pull-to-refresh-content'); //重置下拉刷新状态
+        
+//      $.ajax({
+//          type: "get",
+//          url: base.getUrl("hosts_forum"),
+//          data: {
+//              "ACTIVITY_ID": base.params.ACTIVITY_ID,
+//              "MEMBER_ID": base.params.MEMBER_ID,
+//              "TYPE": 2,
+//              "showCount": base.params.showCount,
+//              "currentPage": ++base.params.currentPageHosts
+//          },
+//          async: true,
+//          success: function (res) {
+//              //参数错误
+//              if (res.status == "error") {
+//                  $.toast(res.msg);
+//                  return;
+//              }
+//              //所有数据加载完成
+//              //[Leo] 加载完所有页的数据应该接口没有返回数据
+//              if (base.params.currentPageHosts > res.totalPage) {
+//                  //$.toast("没有更多评论啦");
+//                  // 加载完毕，则注销无限加载事件，以防不必要的加载
+//                  //$.detachInfiniteScroll($('.infinite-scroll'));
+//                  // 删除加载提示符
+//                  $('#tab3 .infinite-scroll-preloader').remove();
+//                  return;
+//              }
+//              //forum
+//              addItemsToTab3(res);
+//
+//              base.vars.loading = false; // 重置加载flag
+//              $.refreshScroller(); //刷新列表滚动状态
+//              $.pullToRefreshDone('.pull-to-refresh-content'); //重置下拉刷新状态
+//          }
+//      });
     }
 
     /**
-     * 添加、刷新列表项
+     * 添加列表项
      */
     function addItems() {
         base.vars.curTab = $('.buttons-tab').find('.active').attr('data-tab-id');
         console.log('[leo]当前标签页=>',base.vars.curTab)
         switch (base.vars.curTab) {
             case 'tab1':
-                getTab1Items();
+            	if(!base.isLogin()){
+            		break;
+            	}
+                //getTab1Items();
+                chitchat.loadMsg(base.vars.curTab);
+                base.vars.loading = false; // 重置加载flag
                 break;
             case 'tab2':
                 getTab2Items();
                 break;
             case 'tab3':
-                getTab3Items();
+            	if(!base.isLogin()){
+            		break;
+            	}
+                //getTab3Items();
+                chitchat.loadMsg(base.vars.curTab);
+                base.vars.loading = false; // 重置加载flag
                 break;
         }
     }
+    
 
     /**
      * 获取活动页基础数据
@@ -581,10 +625,11 @@ define(function (require, exports, module) {
                 .data('END_TIME', data.END_TIME) //活动结束时间
             ;
             $('title').html(data.TITLE);
+            base.vars.activityTitle = data.TITLE;
 
-            base.vars.TOTAL_VALUE = data.TOTAL_VALUE;
-            base.vars.OPPOSE_VALUE = data.OPPOSE_VALUE;
-            base.vars.SUPPORT_VALUE = data.SUPPORT_VALUE;
+//          base.vars.TOTAL_VALUE = data.TOTAL_VALUE;
+//          base.vars.OPPOSE_VALUE = data.OPPOSE_VALUE;
+//          base.vars.SUPPORT_VALUE = data.SUPPORT_VALUE;
 
             base.params.ATTENTION_ID = data.ATTENTION_ID;
             base.params.TV_SHOW_ID = data.TV_SHOW_ID;
@@ -608,6 +653,15 @@ define(function (require, exports, module) {
                     "LINK": "", //轮播图链接ID 后外链地址
                     "MAKE_TYPE": 1
                 });
+            }
+            if(data.chatList != null){
+            	$.each(data.chatList, function(i,item) {
+            		if (item.IS_POWER == '0') {
+            			base.vModel.commonRoomId = item.CHAT_ID
+            		} else{
+            			base.vModel.hostRoomId  = item.CHAT_ID
+            		}
+            	});
             }
             Vue.nextTick(function () { //任务：轮播图渲染完成执行
                 //$(".swiper-container").swiper({
@@ -640,8 +694,8 @@ define(function (require, exports, module) {
             //var progress = parseInt(data.OPPOSE_VALUE) / (parseInt(data.OPPOSE_VALUE) + parseInt(data.SUPPORT_VALUE));
             //base.vars.gauge.set(isNaN(progress) ? 0.5 * base.vars.gauge.maxValue : progress * base.vars.gauge.maxValue);
             base.vModel.tvShowName = data.TV_NAME;
-            base.vModel.fans = data.fansCount;
-            base.vModel.forums = data.forums;
+//          base.vModel.fans = data.fansCount;
+//          base.vModel.forums = data.forums;
             base.vModel.onlines = data.onlines;
             base.vModel.isHeartActive = data.ATTENTION_ID ? "fa-heart" : "fa-heart-o";
             if (/^javascript/.test(data.URI)) {
@@ -651,6 +705,61 @@ define(function (require, exports, module) {
             }
         } catch (e) {
         }
+    }
+    
+    
+	var $nav = $('#activePage nav');
+	var $bar_con = $('.bar-tab~.content');
+    
+      /**
+     * tab 点击事件
+     */
+    function tabClick() {
+    	$('.buttons-tab .tab-link').on('click',function(){
+    		base.vars.curTab = $(this).attr('data-tab-id');
+	        console.log('[leo]当前标签页=>',base.vars.curTab);
+	        $('#comment').val('');
+	        base.vModel.inputMsg = '';
+	        base.vars.str_at = '';
+	        switch (base.vars.curTab) {
+	            case 'tab1':
+	            	if(!base.vars.common_flag){
+	            		getTab1Items();
+	            	}
+	            	if(base.params.SIGN.toString() == ''){
+	            		$nav.css('display','none');
+						$bar_con.css('bottom','0px');
+	            	}else{
+	            		$nav.css('display','block');
+						$bar_con.css('bottom','2.5rem');
+	            	}
+	                break;
+	            case 'tab3':
+	            	if(!base.vars.host_flag){
+	            		getTab3Items();
+	            	}
+	            	if(base.params.SIGN == '1' || base.params.SIGN == '2'){
+	            		$nav.css('display','block');
+						$bar_con.css('bottom','2.5rem');
+	            	}else{
+	            		$nav.css('display','none');
+						$bar_con.css('bottom','0px');
+	            	}
+	                break;
+	            default : 
+	            	$nav.css('display','none');
+					$bar_con.css('bottom','0px');
+	            	break;
+	        }
+    	});
+    }
+
+    /**
+     * 用户登入
+     */
+    function memberLogin(id){
+    	this.params.MEMBER_ID = id;
+    	getTab1Items();
     }
 
     /**
@@ -670,10 +779,10 @@ define(function (require, exports, module) {
         base.params.currentPageGoods = 0;
         base.vModel.$set('goods', []);
         //绑定数据
-        //getBaseData();
-        getTab1Items();
-        getTab2Items();
-        getTab3Items();
+        getBaseData();
+        //getTab1Items(); //嗨吧
+        getTab2Items();	//同款
+       	//getTab3Items();	//主持嘉宾
         $('#tab2').on('blur', '#search', function () {
             base.vModel.$set('goods', []);
             getTab2Items();
@@ -688,8 +797,10 @@ define(function (require, exports, module) {
      * 初始化页面
      */
     function initPageData() {
-        getBaseData();
+        //getBaseData();
         getPageData();
+        //tab点击事件
+        tabClick();
     }
 
     module.exports = {
@@ -697,6 +808,7 @@ define(function (require, exports, module) {
         'initPageData': initPageData,
         'getPageData': getPageData,
         'addItems': addItems,
-        'stop': stopAutoRefreshData
+        'stop': stopAutoRefreshData,
+        'memberLogin' : memberLogin
     }
 });

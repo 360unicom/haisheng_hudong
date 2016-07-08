@@ -33,9 +33,9 @@ body, html {
   font-size: 1em;
 }
 .l-guests {
-//background-image: -webkit-gradient(linear, left top, right top, color-stop(0, #f22), color-stop(0.15, #f2f), color-stop(0.3, #22f), color-stop(0.45, #1fd0d0), color-stop(0.6, #a77fd2), color-stop(0.75, #27c727), color-stop(0.9, #caca2f), color-stop(1, #f22));
-//color: transparent;
-  color: #4169E1;
+  background-image: -webkit-gradient(linear, left top, right top, color-stop(0, #f22), color-stop(0.15, #f2f), color-stop(0.3, #22f), color-stop(0.45, #1fd0d0), color-stop(0.6, #a77fd2), color-stop(0.75, #27c727), color-stop(0.9, #caca2f), color-stop(1, #f22));
+  color: transparent;
+  //color: #0000AA;
   -webkit-background-clip: text;
   font-size: 1em;
 }
@@ -108,8 +108,8 @@ body, html {
       //top: 50%;
       //left: 50%;
       //transform: translate(-50%, -50%);
-      width: auto;
-      height: 250px;
+      width: 100%;
+      height: auto;
       margin: 0 auto;
       //height: 100%;
     }
