@@ -82,12 +82,11 @@ define(function(require, exports, module) {
 					return conversation;
 				} else {
 					// 如果服务器端不存在这个 conversation
-					showLog('服务器不存在这个 conversation，创建一个。');
+					console.log('服务器不存在这个 conversation，创建一个。');
 					return client.createConversation({
 						name: 'LeanCloud-Conversation',
 						members: [
 							// 默认包含当前用户
-							'Wallace'
 						],
 						// 创建暂态的聊天室（暂态聊天室支持无限人员聊天，但是不支持存储历史）
 						// transient: true,

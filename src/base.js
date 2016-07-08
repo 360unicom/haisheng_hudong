@@ -16,11 +16,11 @@ define(function (require, exports, module) {
             "memberInfo": "app/member/findById", //用户信息
             "creatRoomId": "app/activity/createChat", //用户信息
             //[Leo]修改接口Hosts
-            //"host": "http://127.0.0.1:8080/t2o/"
+            "host": "http://127.0.0.1:8080/t2o/"
             //"host": "http://192.168.0.125:8080/t2o/" //蒋丽坤
             //"host": "http://123.57.89.97:8080/t2o/" //测试服务器地址
             //"host": "http://123.57.172.249:8080/t2o/" //正式服务器地址
-            "host": "http://highsheng.com:8080/t2o/" //正式服务器地址
+            //"host": "http://highsheng.com:8080/t2o/" //正式服务器地址
 
             /**
              * http://leo/haisheng_hudong_min_v1.1.3/dist/activity.html?ACTIVITY_ID=67dcd7880d1a4a95a2caa35e4a256a93&MEMBER_ID=9e4214c271694660a068b9c6faf6747c&PHONE_TYPE=BlackBerry
